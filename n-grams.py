@@ -39,7 +39,7 @@ class glbClass: #singleton class, contains global properties , just for encapsul
         numpy.savetxt('./target.txt', self.target, fmt = '%s')
         print 'Saved target to ./target.txt'
     def readFromFile(self, fileName):
-        self.data = numpy.loadtxt(fileName, dtype = (str,str))
+        self.data = numpy.genfromtxt(fname = fileName, delimiter = ' ', dtype = (str,str))
     def appendTarget(self, label):
         self.target = numpy.append(self.target, label)
     # def numpyListOfAttr(self):
@@ -82,16 +82,20 @@ def ngram(ngramInstance, sequence, n):
     # print ngramInstance
     return ngramInstance
 def loopNgram(dataTuple):
-
-    print dataTuple
+    print 'Start parsing...'
+    # print dataTuple
+    # print '------------------------'
     sequence = dataTuple[0]
     label = dataTuple[1]
-
     glbObj = glbClass.getInstance()
+    previousNumberOfAttr = glbObj.numberOfAttr #for monitoring logs purpose 
     ngramInstance = numpy.zeros((glbObj.numberOfAttr), dtype=int) #init ngramInstance with already-created attributes
     for i in range(1,40):
         ngramInstance = ngram(ngramInstance, sequence, i) 
-
+    print '->Finish parsing!'
+    print '+Current number of attr: ' + str(glbObj.numberOfAttr)
+    print 'Increased: ' + str(glbObj.numberOfAttr - previousNumberOfAttr) 
+    print '----------------------------------------'
     glbObj.appendRecord(ngramInstance)
     glbObj.appendTarget(label)
 
@@ -100,14 +104,22 @@ glbObj = glbClass.getInstance()
 # lst2 = loopNgram('ACKPLLREEVVFQVGLNQYLVGSQLPCEPEPDVAVLTSML')
 # glbObj.saveToFile()
 # print glbObj.finalMatrix
-glbObj.readFromFile('./input.txt')
+glbObj.readFromFile('./data/unlabled_1k.txt')
+print 'Total: ' + str(len (glbObj.data))
+print '---------------------------'
+it = numpy.nditer(glbObj.data, flags = ['external_loop'], order = 'C')
+print it
 
-for dataTuple in glbObj.data:
-    loopNgram(dataTuple)
+# print glbObj.data
+for index in range(0, len(glbObj.data)):
+    # print glbObj.data[index]
+    print '-Current tuple index: ' + str(index)
+    loopNgram(glbObj.data[index])
 
 # print glbObj.target
 glbObj.saveToFile()
+print glbObj.numberOfAttr
 # print glbObj.numpyListOfAttr()
 
 
-print glbObj.listOfAttr
+# print glbObj.listOfAttr

@@ -1,0 +1,71 @@
+LOCUS	    AB010249		    1341 bp    RNA     linear	VRL 10-JUL-1998
+DEFINITION  Hepatitis C virus genomic RNA for polyprotein (NS5A region),
+	    partial cds, strain:HCV-1bJk
+ACCESSION   AB010249
+VERSION     AB010249.1 GI:3299787
+KEYWORDS    .
+SOURCE	    Hepatitis C virus
+  ORGANISM  Hepatitis C virus Viruses; ssRNA positive-strand viruses, no DNA
+	    stage; Flaviviridae; Hepacivirus
+REFERENCE   1
+  AUTHORS   Song, J., Wang, F., Itoh, M., Hotta, H.
+  TITLE     Partial abrogation of antiviral activity of interferon by the NS5A
+	    protein of hepatitis C virus
+  JOURNAL   Unpublished
+REFERENCE   2 (bases 1 to 1341)
+  AUTHORS   Hotta, H.
+  TITLE     Direct Submission
+  JOURNAL   Submitted (08-JAN-1998) Hak Hotta, Kobe University School of
+	    Medicine, Department of Microbiology; 7-5-1 Kusunoki-cho, Chuo-ku,
+	    Kobe, Hyogo 650, Japan (E-mail:hotta@kobe-u.ac.jp,
+	    Tel:+81-78-341-7451, Fax:+81-78-351-6347)
+COMMENT     On Jul 10, 1998 this sequence version replaced gi:3298132. Sequence
+	    updated (09-Jul-1998).
+FEATURES             Location/Qualifiers
+     source	     1..1341
+		     /organism="Hepatitis C virus"
+		     /mol_type="genomic RNA"
+		     /strain="HCV-1bJk"
+		     /db_xref="taxon:11103"
+     CDS	     <1..>1341
+		     /codon_start="1"
+		     /transl_table="1"
+		     /product="polyprotein"
+		     /protein_id="BAA31545.1"
+		     /db_xref="GI:3299788"
+		     /translation="SGSWLKDVWDWICTVLTDFKTWLQSKLLPKLPGVPFFSCQRGYK
+		     GVWRGDGIMQTTCPCGAQITGHVKNGSMRIVGPKTCSNTWHGTFPINAYTTGPCTPSP
+		     APNYSRALWRVAAEEYVEITRVGDFHYVTGMTTDNVKCPCQVPAPEFFTELDGVRLHR
+		     YAPACRPLLRVDVTFQVGLNQYLVGSQLPCEPEPDVAVLTSMLTDPSHITAETAKRRP
+		     ARGSPPSLASSSASQLSAPSLKATCTTHHDSPDADLIEANLLWRQEMGGNITRVESEN
+		     KVVILDSFDPLRAEEDEREVSVAAEILRKSKNFPPALPIWARPDYNPPLLESWKSPDY
+		     VPPAVHGCPLPPTTGPPIPPPRKKRTVVLTESTVSSALAELATKTFGSSGSSAVDSGT
+		     ATAPPDQTSDDGDKESDIESYSSMPPLEGEPGDPDLSDGSWSTVSGEAGDDVVCC"
+     mat_peptide     1..1341
+		     /product="NS5A"
+BASE COUNT	279 a	 418 c	  384 g    260 t
+ORIGIN
+       1 tccggatcct ggctaaagga tgtttgggac tggatatgca cggtgttgac tgacttcaag 
+      61 acctggctcc agtccaagct cctgccgaaa ttgccgggag tccctttctt ctcatgccaa 
+     121 cgcgggtaca agggagtctg gcggggggac ggcatcatgc aaaccacctg cccatgtgga 
+     181 gcacaaatta ccggacatgt caaaaacggt tccatgagga tcgttgggcc taaaacctgc 
+     241 agcaacacgt ggcacggaac gttccccatc aacgcgtaca ccacaggccc ctgcacaccc 
+     301 tccccggcgc cgaactattc cagggcgctg tggcgggtgg ctgctgaaga gtacgtggag 
+     361 attacgcggg tgggggactt ccactacgtg acgggtatga ccaccgacaa cgtaaaatgc 
+     421 ccgtgccagg tcccggcccc cgaattcttc actgaattgg acggggtgcg gttgcacagg 
+     481 tacgctccgg cgtgcagacc tctcctacgg gtggatgtca cattccaggt cgggctcaac 
+     541 caatacctgg ttgggtcaca gctcccatgc gagcctgagc cggatgtggc agtgctcact 
+     601 tccatgctca ccgacccctc ccacattaca gcagagacgg ctaaacgtag gccggccagg 
+     661 gggtctcccc cctccttggc cagctcttca gctagccaat tgtctgcgcc ttccttgaag 
+     721 gcaacatgca ctacccacca tgactccccg gacgctgacc tcatcgaggc caacctcctg 
+     781 tggcggcagg agatgggcgg aaacatcacc cgtgtggagt cagaaaataa ggtggtaatt 
+     841 ttggactctt tcgacccgct tcgagcggaa gaggatgaga gggaagtatc cgttgcagca 
+     901 gagatcctgc gaaaatccaa aaatttcccc ccggcgttgc ccatatgggc acgcccggat 
+     961 tacaaccctc cactgttaga gtcctggaaa agtccggact acgtccctcc ggcggtgcat 
+    1021 gggtgcccat tgccgcctac cacgggccct ccaataccgc ctccacggaa aaagaggacg 
+    1081 gttgttctga cagagtccac cgtgtcttct gccttggcgg agctggctac taagactttc 
+    1141 ggcagctccg gatcgtcggc cgttgacagc ggcacggcga ccgcccctcc cgatcagacc 
+    1201 tctgacgacg gtgacaaaga atctgacatt gagtcgtact cctccatgcc cccccttgag 
+    1261 ggggagccgg gggaccctga tctcagcgac gggtcttggt ctaccgtgag cggggaggcc 
+    1321 ggcgacgacg tcgtctgctg c
+//
