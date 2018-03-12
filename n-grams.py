@@ -104,7 +104,7 @@ glbObj = glbClass.getInstance()
 # lst2 = loopNgram('ACKPLLREEVVFQVGLNQYLVGSQLPCEPEPDVAVLTSML')
 # glbObj.saveToFile()
 # print glbObj.finalMatrix
-glbObj.readFromFile('./data/unlabled_1k.txt')
+glbObj.readFromFile('./data/unlabled_40_8k.txt')
 print 'Total: ' + str(len (glbObj.data))
 print '---------------------------'
 it = numpy.nditer(glbObj.data, flags = ['external_loop'], order = 'C')
