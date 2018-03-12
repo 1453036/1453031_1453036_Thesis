@@ -1,4 +1,5 @@
 import numpy
+import pickle #built-in file handling module from python
 
 #use numpy only
 #data file with format, "sequence label"
@@ -6,7 +7,6 @@ import numpy
 class glbClass: #singleton class, contains global properties , just for encapsulation
     # Here will be the instance stored.
     __instance = None
-    __middleMatrix = [] #temp array for standardize data (padding zeros) 
 
     data = numpy.array([]) #contain data read from file, type array of strings
     target = numpy.array([],  dtype = str) # array of labels
@@ -15,13 +15,13 @@ class glbClass: #singleton class, contains global properties , just for encapsul
     finalMatrix = numpy.array([]) # final result (usable data)
 
     #private methods
-    def __standardizeData(self):
-        for record in self.__middleMatrix:
-            standardizedRecord = numpy.pad(record, (0, self.numberOfAttr - len(record)), 'constant')
-            if(len(self.finalMatrix) is 0):
-                self.finalMatrix = standardizedRecord
-            else: 
-                self.finalMatrix = numpy.vstack((self.finalMatrix, standardizedRecord))
+    # def __standardizeData(self):
+    #     for record in self.__middleMatrix:
+    #         standardizedRecord = numpy.pad(record, (0, self.numberOfAttr - len(record)), 'constant')
+    #         if(len(self.finalMatrix) is 0):
+    #             self.finalMatrix = standardizedRecord
+    #         else: 
+    #             self.finalMatrix = numpy.vstack((self.finalMatrix, standardizedRecord))
 
     #public methods
     def appendAttr(self, attrName):
@@ -29,15 +29,41 @@ class glbClass: #singleton class, contains global properties , just for encapsul
         self.numberOfAttr = self.numberOfAttr + 1
     def getAttrIndex(self, attrName):
         return self.listOfAttr[attrName]
-    def appendRecord(self, record):
-        self.__middleMatrix.append(record)
-        return 1
+    # def appendRecord(self, record):
+    #     self.__middleMatrix.append(record)
+    #     return 1 
+    def writeDownRecord(self, record):
+        tempFile = open('temp', 'a')
+        pickle.dump(record, tempFile) #write record down to file
+        tempFile.close() #apply change to file and clear mem
     def saveToFile(self):
-        self.__standardizeData()
-        numpy.savetxt('./data.txt', self.finalMatrix.astype(int),fmt='%i')
-        print 'Saved data to ./data.txt'
+        #standardize data (zeros padding)
+        print 'Standardize data and save to file...'
+        tempFile = open('temp', 'r')
+        while True:
+            try:
+                record = pickle.load(tempFile) #read record per time 
+                standardizedRecord = numpy.pad(record, (0, self.numberOfAttr - len(record)), 'constant')
+                dataFile = open('data.pkl', 'a') #encoding file, use pickle for file reading
+                pickle.dump(standardizedRecord, dataFile)
+                dataFile.close()
+            except(EOFError, pickle.UnpicklingError):
+                break
+        print '---->Saved matrix to ./data.pkl'
+        # for record in self.__middleMatrix:
+        #     standardizedRecord = numpy.pad(record, (0, self.numberOfAttr - len(record)), 'constant')
+        #     if(len(self.finalMatrix) is 0):
+        #         self.finalMatrix = standardizedRecord
+        #     else: 
+        #         self.finalMatrix = numpy.vstack((self.finalMatrix, standardizedRecord))
+        #---------------------------------------------------------------------------
         numpy.savetxt('./target.txt', self.target, fmt = '%s')
-        print 'Saved target to ./target.txt'
+        print '---->Saved target to ./target.txt'
+        attrListFile = open('attr.pkl', 'w')
+        pickle.dump(self.listOfAttr, attrListFile)
+        attrListFile.close()
+        print '---->Saved attr to ./attr.pkl'
+
     def readFromFile(self, fileName):
         self.data = numpy.genfromtxt(fname = fileName, delimiter = ' ', dtype = (str,str))
     def appendTarget(self, label):
@@ -58,6 +84,7 @@ class glbClass: #singleton class, contains global properties , just for encapsul
         if glbClass.__instance != None:
             raise Exception("This class is a singleton!")
         else:
+            # self.__middleFile.close() 
             glbClass.__instance = self
     #-----------------------------------------------
 
@@ -96,7 +123,7 @@ def loopNgram(dataTuple):
     print '+Current number of attr: ' + str(glbObj.numberOfAttr)
     print 'Increased: ' + str(glbObj.numberOfAttr - previousNumberOfAttr) 
     print '----------------------------------------'
-    glbObj.appendRecord(ngramInstance)
+    glbObj.writeDownRecord(ngramInstance)
     glbObj.appendTarget(label)
 
 glbObj = glbClass.getInstance()
