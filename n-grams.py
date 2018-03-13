@@ -1,5 +1,8 @@
 import numpy
 import pickle #built-in file handling module from python
+import sys, getopt  #handling commandline params
+import os #delete temp file, see saveToFile function for more
+
 
 #use numpy only
 #data file with format, "sequence label"
@@ -7,70 +10,78 @@ import pickle #built-in file handling module from python
 class glbClass: #singleton class, contains global properties , just for encapsulation
     # Here will be the instance stored.
     __instance = None
+    __currentDatasetIndx = 0
+    __resultDir = './result/'
+
 
     data = numpy.array([]) #contain data read from file, type array of strings
     target = numpy.array([],  dtype = str) # array of labels
     numberOfAttr = 0
-    listOfAttr = {} #type: dictionary ,template: {attrName1: index,attrName2: index + 1 , ...}, attribute collection from extracting whole dataset 
-    finalMatrix = numpy.array([]) # final result (usable data)
+    listOfAttr = {} #type: dictionary ,template: {attrName1: index,attrName2: index + 1 , ...}, attribute collection from extracting whole dataset
+    opts = getopt.getopt(sys.argv[1:],"u:s:n:") # u: unlabeled data file, s: svr data file, n: non-svr data file
 
-    #private methods
-    # def __standardizeData(self):
-    #     for record in self.__middleMatrix:
-    #         standardizedRecord = numpy.pad(record, (0, self.numberOfAttr - len(record)), 'constant')
-    #         if(len(self.finalMatrix) is 0):
-    #             self.finalMatrix = standardizedRecord
-    #         else: 
-    #             self.finalMatrix = numpy.vstack((self.finalMatrix, standardizedRecord))
+    fileList = numpy.array(["./data/unlabeled.txt", "./data/svr.txt", "./data/non-svr.txt"], dtype = str) #read from agr if agr provided, default values for otherwise
+    dataFileNames = numpy.array(["unlabeled-data.pkl", "svr-data.pkl", "non-svr-data.pkl"], dtype = str) #save finished data to file with default names
+    targetFileNames = numpy.array(["unlabeled-target.pkl", "svr-target.pkl", "non-svr-target.pkl"], dtype = str) #save to finished target data to file with default names
 
-    #public methods
+
+    def init(self):
+        for opt, arg in self.opts[0]:
+            if opt  == "-u":
+                self.fileList[0] = arg
+            elif opt == "-s":
+                self.fileList[1] = arg
+            elif opt == "-n":
+                self.fileList[2] = arg
+
+    #doing with local attr
     def appendAttr(self, attrName):
         self.listOfAttr[attrName] = self.numberOfAttr
         self.numberOfAttr = self.numberOfAttr + 1
     def getAttrIndex(self, attrName):
         return self.listOfAttr[attrName]
-    # def appendRecord(self, record):
-    #     self.__middleMatrix.append(record)
-    #     return 1 
+    def appendTarget(self, label):
+        self.target = numpy.append(self.target, label)
+
+    #doing with file
     def writeDownRecord(self, record):
-        tempFile = open('temp', 'a')
+        tempFile = open(self.__resultDir + 'temp', 'a')
         pickle.dump(record, tempFile) #write record down to file
         tempFile.close() #apply change to file and clear mem
     def saveToFile(self):
         #standardize data (zeros padding)
+        dataFileName = self.__resultDir + self.dataFileNames[self.__currentDatasetIndx]
+        targetFileName = self.__resultDir + self.targetFileNames[self.__currentDatasetIndx]
+
         print 'Standardize data and save to file...'
-        tempFile = open('temp', 'r')
+        tempFile = open(self.__resultDir + 'temp', 'r')
         while True:
             try:
                 record = pickle.load(tempFile) #read record per time 
                 standardizedRecord = numpy.pad(record, (0, self.numberOfAttr - len(record)), 'constant')
-                dataFile = open('data.pkl', 'a') #encoding file, use pickle for file reading
+                dataFile = open(dataFileName, 'a') #encoding file, use pickle for file reading
                 pickle.dump(standardizedRecord, dataFile)
                 dataFile.close()
             except(EOFError, pickle.UnpicklingError):
                 break
-        print '---->Saved matrix to ./data.pkl'
-        # for record in self.__middleMatrix:
-        #     standardizedRecord = numpy.pad(record, (0, self.numberOfAttr - len(record)), 'constant')
-        #     if(len(self.finalMatrix) is 0):
-        #         self.finalMatrix = standardizedRecord
-        #     else: 
-        #         self.finalMatrix = numpy.vstack((self.finalMatrix, standardizedRecord))
-        #---------------------------------------------------------------------------
-        numpy.savetxt('./target.txt', self.target, fmt = '%s')
-        print '---->Saved target to ./target.txt'
-        attrListFile = open('attr.pkl', 'w')
-        pickle.dump(self.listOfAttr, attrListFile)
-        attrListFile.close()
-        print '---->Saved attr to ./attr.pkl'
+        print '---->Saved matrix to ' + self.__resultDir  + dataFileName
 
-    def readFromFile(self, fileName):
-        self.data = numpy.genfromtxt(fname = fileName, delimiter = ' ', dtype = (str,str))
-    def appendTarget(self, label):
-        self.target = numpy.append(self.target, label)
-    # def numpyListOfAttr(self):
-    #     # dictKeys = self.
-    #     # return numpy.fromiter(self.listOfAttr.iterkeys() , dtype = 'S128')
+        numpy.savetxt('./' + targetFileName, self.target, fmt = '%s')
+        print '---->Saved target to ' + self.__resultDir + targetFileName
+        self.__currentDatasetIndx = self.__currentDatasetIndx + 1
+        if(self.__currentDatasetIndx > 2):
+            attrListFile = open('./result/attr.pkl', 'w')
+            pickle.dump(self.listOfAttr, attrListFile)
+            attrListFile.close()
+            print '---->Saved attr to ./result/attr.pkl'
+
+            os.remove(self.__resultDir + './temp') #clean out the temp file which occupy lot of space
+            print '---->Remove temp file'
+
+    def fetchDataSet(self):
+        print '### Current dataset: ' + str(self.fileList[self.__currentDatasetIndx])
+        self.data = numpy.genfromtxt(fname = self.fileList[self.__currentDatasetIndx], delimiter = ' ', dtype = (str,str))
+
     #---------------singleton implement------------ 
     @staticmethod
     def getInstance():
@@ -85,6 +96,7 @@ class glbClass: #singleton class, contains global properties , just for encapsul
             raise Exception("This class is a singleton!")
         else:
             # self.__middleFile.close() 
+            os.mkdir('./result')
             glbClass.__instance = self
     #-----------------------------------------------
 
@@ -127,26 +139,28 @@ def loopNgram(dataTuple):
     glbObj.appendTarget(label)
 
 glbObj = glbClass.getInstance()
-# lst1 = loopNgram('PVCKPLLREEVEFQVGLNRYLVGSQLPCEPEPDVAVLTSM')
-# lst2 = loopNgram('ACKPLLREEVVFQVGLNQYLVGSQLPCEPEPDVAVLTSML')
-# glbObj.saveToFile()
-# print glbObj.finalMatrix
-glbObj.readFromFile('./data/unlabled_40_8k.txt')
-print 'Total: ' + str(len (glbObj.data))
-print '---------------------------'
-it = numpy.nditer(glbObj.data, flags = ['external_loop'], order = 'C')
-print it
 
-# print glbObj.data
-for index in range(0, len(glbObj.data)):
-    # print glbObj.data[index]
-    print '-Current tuple index: ' + str(index)
-    loopNgram(glbObj.data[index])
-
-# print glbObj.target
-glbObj.saveToFile()
-print glbObj.numberOfAttr
-# print glbObj.numpyListOfAttr()
+def analyze(dataset):
+    print 'Total: ' + str(len (dataset))
+    print '---------------------------'
+    # print glbObj.data
+    for index in range(0, len(dataset)):
+        # print glbObj.data[index]
+        print '-Current tuple index: ' + str(index)
+        loopNgram(dataset[index])
+    glbObj.saveToFile()
 
 
-# print glbObj.listOfAttr
+
+
+glbObj.init()
+print glbObj.fileList
+
+glbObj.fetchDataSet()
+analyze(glbObj.data)
+glbObj.fetchDataSet()
+analyze(glbObj.data)
+glbObj.fetchDataSet()
+analyze(glbObj.data)
+
+print glbObj.listOfAttr
