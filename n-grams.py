@@ -68,7 +68,7 @@ class glbClass: #singleton class, contains global properties , just for encapsul
                 try:
                     record = pickle.load(tempFile) #read record per time 
                     print 'Current line: ' + str(currentLine)
-
+                    print 'Current offset: ' + str(currentOffset)
                     if(currentOffset <2 and currentLine is self.__dataOffset[currentOffset]):
                         print '---->Saved data to ' + self.__resultDir  + dataFileName
                         currentOffset = currentOffset + 1
@@ -79,7 +79,7 @@ class glbClass: #singleton class, contains global properties , just for encapsul
                     pickle.dump(standardizedRecord, dataFile)
                     dataFile.close()
                     currentLine = currentLine + 1
-                    
+
                 except(EOFError, pickle.UnpicklingError):
                     break
 
@@ -101,7 +101,7 @@ class glbClass: #singleton class, contains global properties , just for encapsul
             self.__dataOffset[self.__currentDatasetIndx] = len(self.data)
         else:
             self.__dataOffset[self.__currentDatasetIndx] =  self.__dataOffset[self.__currentDatasetIndx - 1] + len(self.data)
-
+        print self.__dataOffset
 
 
 
