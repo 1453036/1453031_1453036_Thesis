@@ -55,6 +55,7 @@ class glbClass: #singleton class, contains global properties , just for encapsul
 
         print 'Standardize data and save to file...'
         tempFile = open(self.__resultDir + 'temp', 'r')
+        print 'Reading temp file...'
         while True:
             try:
                 record = pickle.load(tempFile) #read record per time 
@@ -69,14 +70,15 @@ class glbClass: #singleton class, contains global properties , just for encapsul
         numpy.savetxt('./' + targetFileName, self.target, fmt = '%s')
         print '---->Saved target to ' + self.__resultDir + targetFileName
         self.__currentDatasetIndx = self.__currentDatasetIndx + 1
+
+        os.remove(self.__resultDir + './temp') #clean out the temp file which occupy lot of space
+        print '---->Remove temp file'
+
         if(self.__currentDatasetIndx > 2):
             attrListFile = open('./result/attr.pkl', 'w')
             pickle.dump(self.listOfAttr, attrListFile)
             attrListFile.close()
             print '---->Saved attr to ./result/attr.pkl'
-
-            os.remove(self.__resultDir + './temp') #clean out the temp file which occupy lot of space
-            print '---->Remove temp file'
 
     def fetchDataSet(self):
         print '### Current dataset: ' + str(self.fileList[self.__currentDatasetIndx])
