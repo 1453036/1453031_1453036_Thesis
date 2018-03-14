@@ -12,7 +12,7 @@ class glbClass: #singleton class, contains global properties , just for encapsul
     __instance = None
     __currentDatasetIndx = 0
     __resultDir = './result/'
-
+    __dataOffset = [0,0,0] #number of data [unlabeled, svr, non-svr]
 
     data = numpy.array([]) #contain data read from file, type array of strings
     target = numpy.array([],  dtype = str) # array of labels
@@ -50,39 +50,60 @@ class glbClass: #singleton class, contains global properties , just for encapsul
         tempFile.close() #apply change to file and clear mem
     def saveToFile(self):
         #standardize data (zeros padding)
-        dataFileName = self.__resultDir + self.dataFileNames[self.__currentDatasetIndx]
         targetFileName = self.__resultDir + self.targetFileNames[self.__currentDatasetIndx]
-
-        print 'Standardize data and save to file...'
-        tempFile = open(self.__resultDir + 'temp', 'r')
-        print 'Reading temp file...'
-        while True:
-            try:
-                record = pickle.load(tempFile) #read record per time 
-                standardizedRecord = numpy.pad(record, (0, self.numberOfAttr - len(record)), 'constant')
-                dataFile = open(dataFileName, 'a') #encoding file, use pickle for file reading
-                pickle.dump(standardizedRecord, dataFile)
-                dataFile.close()
-            except(EOFError, pickle.UnpicklingError):
-                break
-        print '---->Saved matrix to ' + self.__resultDir  + dataFileName
-
         numpy.savetxt('./' + targetFileName, self.target, fmt = '%s')
         print '---->Saved target to ' + self.__resultDir + targetFileName
-        self.__currentDatasetIndx = self.__currentDatasetIndx + 1
 
-        os.remove(self.__resultDir + './temp') #clean out the temp file which occupy lot of space
-        print '---->Remove temp file'
+        if(self.__currentDatasetIndx >= 2):
 
-        if(self.__currentDatasetIndx > 2):
+
+            currentOffset = 0
+            currentLine = 0
+            dataFileName = self.__resultDir + self.dataFileNames[currentOffset]
+
+            print 'Standardize data and save to file...'
+            tempFile = open(self.__resultDir + 'temp', 'r')
+            print 'Reading temp file...'
+            while True:
+                try:
+                    record = pickle.load(tempFile) #read record per time 
+                    print 'Current line: ' + str(currentLine)
+
+                    if(currentOffset <2 and currentLine is self.__dataOffset[currentOffset]):
+                        print '---->Saved data to ' + self.__resultDir  + dataFileName
+                        currentOffset = currentOffset + 1
+                        dataFileName = self.__resultDir + self.dataFileNames[currentOffset]
+                        print '-------->Reading offset: ' + str(currentOffset)
+                    standardizedRecord = numpy.pad(record, (0, self.numberOfAttr - len(record)), 'constant')
+                    dataFile = open(dataFileName, 'a') #encoding file, use pickle for file reading
+                    pickle.dump(standardizedRecord, dataFile)
+                    dataFile.close()
+                    currentLine = currentLine + 1
+                    
+                except(EOFError, pickle.UnpicklingError):
+                    break
+
             attrListFile = open('./result/attr.pkl', 'w')
             pickle.dump(self.listOfAttr, attrListFile)
             attrListFile.close()
-            print '---->Saved attr to ./result/attr.pkl'
+            print '---->Saved attr to ./result/attr.pkl'    
+
+            os.remove(self.__resultDir + './temp') #clean out the temp file which occupy lot of space
+            print '---->Remove temp file'
+
+        self.__currentDatasetIndx = self.__currentDatasetIndx + 1
+
 
     def fetchDataSet(self):
         print '### Current dataset: ' + str(self.fileList[self.__currentDatasetIndx])
         self.data = numpy.genfromtxt(fname = self.fileList[self.__currentDatasetIndx], delimiter = ' ', dtype = (str,str))
+        if(self.__currentDatasetIndx is 0):
+            self.__dataOffset[self.__currentDatasetIndx] = len(self.data)
+        else:
+            self.__dataOffset[self.__currentDatasetIndx] =  self.__dataOffset[self.__currentDatasetIndx - 1] + len(self.data)
+
+
+
 
     #---------------singleton implement------------ 
     @staticmethod
@@ -165,4 +186,4 @@ analyze(glbObj.data)
 glbObj.fetchDataSet()
 analyze(glbObj.data)
 
-print glbObj.listOfAttr
+# print glbObj.listOfAttr
