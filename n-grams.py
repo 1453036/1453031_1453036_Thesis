@@ -43,7 +43,7 @@ class glbClass: #singleton class, contains global properties , just for encapsul
     def appendTarget(self, label):
         self.target = numpy.append(self.target, label)
 
-    #doing with file
+    #handling file
     def writeDownRecord(self, record):
         tempFile = open(self.__resultDir + 'temp', 'a')
         pickle.dump(record, tempFile) #write record down to file
@@ -69,7 +69,7 @@ class glbClass: #singleton class, contains global properties , just for encapsul
                     record = pickle.load(tempFile) #read record per time 
                     print 'Current line: ' + str(currentLine)
                     print 'Current offset: ' + str(currentOffset)
-                    if(currentOffset <2 and currentLine is self.__dataOffset[currentOffset]):
+                    if(currentOffset <2 and currentLine == self.__dataOffset[currentOffset]):
                         print '---->Saved data to ' + self.__resultDir  + dataFileName
                         currentOffset = currentOffset + 1
                         dataFileName = self.__resultDir + self.dataFileNames[currentOffset]
